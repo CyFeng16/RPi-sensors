@@ -135,9 +135,9 @@ class BMP085:
         # Read raw temp before aligning it with the calibration values
         UT = self.readRawTemp()
         X1 = ((UT - self._cal_AC6) * self._cal_AC5) >> 15
-        X2 = (self._cal_MC << 11) / (X1 + self._cal_MD)
+        X2 = (self._cal_MC << 11) // (X1 + self._cal_MD)
         B5 = X1 + X2
-        temp = ((B5 + 8) >> 4) / 10.0
+        temp = ((B5 + 8) >> 4) // 10.0
         if self.debug:
             print("DBG: Calibrated temperature = %f C" % temp)
         return temp
@@ -182,20 +182,20 @@ class BMP085:
 
         # True Temperature Calculations
         X1 = ((UT - self._cal_AC6) * self._cal_AC5) >> 15
-        X2 = (self._cal_MC << 11) / (X1 + self._cal_MD)
+        X2 = (self._cal_MC << 11) // (X1 + self._cal_MD)
         B5 = X1 + X2
         if self.debug:
             print("DBG: X1 = %d" % (X1))
             print("DBG: X2 = %d" % (X2))
             print("DBG: B5 = %d" % (B5))
-            print("DBG: True Temperature = %.2f C" % (((B5 + 8) >> 4) / 10.0))
+            print("DBG: True Temperature = %.2f C" % (((B5 + 8) >> 4) // 10.0))
 
         # Pressure Calculations
         B6 = B5 - 4000
         X1 = (self._cal_B2 * (B6 * B6) >> 12) >> 11
         X2 = (self._cal_AC2 * B6) >> 11
         X3 = X1 + X2
-        B3 = (((self._cal_AC1 * 4 + X3) << self.mode) + 2) / 4
+        B3 = (((self._cal_AC1 * 4 + X3) << self.mode) + 2) // 4
         if self.debug:
             print("DBG: B6 = %d" % (B6))
             print("DBG: X1 = %d" % (X1))
@@ -214,9 +214,9 @@ class BMP085:
             print("DBG: B7 = %d" % (B7))
 
         if B7 < 0x80000000:
-            p = (B7 * 2) / B4
+            p = (B7 * 2) // B4
         else:
-            p = (B7 / B4) * 2
+            p = (B7 // B4) * 2
 
         X1 = (p >> 8) * (p >> 8)
         X1 = (X1 * 3038) >> 16
@@ -236,7 +236,7 @@ class BMP085:
         "Calculates the altitude in meters"
         altitude = 0.0
         pressure = float(self.readPressure())
-        altitude = 44330.0 * (1.0 - pow(pressure / seaLevelPressure, 0.1903))
+        altitude = 44330.0 * (1.0 - pow(pressure // seaLevelPressure, 0.1903))
         if self.debug:
             print("DBG: Altitude = %d" % (altitude))
         return altitude
