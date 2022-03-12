@@ -3,7 +3,6 @@
 import time
 import math
 import smbus
-import pygame
 import RPi.GPIO as GPIO
 
 
